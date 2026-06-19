@@ -13,14 +13,13 @@ import Views from "@/components/views";
 import { StartupCardType } from "@/components/startup-card";
 import { Suspense } from "react";
 
-export const dynamic = "force-dynamic";
-
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
   const startup: StartupCardType | null = await client.fetch(
     STARTUP_BY_ID_QUERY,
     { id },
+    { next: { revalidate: 60 } },
   );
 
   if (!startup) notFound();
