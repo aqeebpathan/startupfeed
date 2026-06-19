@@ -5,9 +5,11 @@ import { writeClient } from "@/sanity/lib/write-client";
 import { STARTUP_VIEWS_QUERY } from "@/sanity/lib/queries";
 
 const Views = async ({ id }: { id: string }) => {
-  const data = await client
-    .withConfig({ useCdn: false })
-    .fetch(STARTUP_VIEWS_QUERY, { id });
+  const data = await client.fetch(
+    STARTUP_VIEWS_QUERY,
+    { id },
+    { cache: "no-store" },
+  );
 
   const totalViews = data?.views ?? 0;
 
