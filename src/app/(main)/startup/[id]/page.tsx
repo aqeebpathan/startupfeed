@@ -11,6 +11,7 @@ import { imageLoader } from "next-sanity/image";
 
 import Views from "@/components/views";
 import { StartupCardType } from "@/components/startup-card";
+import { Suspense } from "react";
 
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
@@ -47,8 +48,11 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
               new Date(startup._createdAt).toLocaleDateString()}
           </span>
         </div>
-
-        <Views id={id} />
+        <Suspense
+          fallback={<div className="px-4 py-2 text-sm border w-fit">...</div>}
+        >
+          <Views id={id} />
+        </Suspense>{" "}
       </div>
 
       {/* Title */}
