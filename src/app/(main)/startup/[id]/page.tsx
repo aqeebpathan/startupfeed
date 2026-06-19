@@ -13,6 +13,8 @@ import Views from "@/components/views";
 import { StartupCardType } from "@/components/startup-card";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
