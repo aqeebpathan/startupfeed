@@ -1,10 +1,16 @@
+"use client";
 import Form from "next/form";
 
 import { Input } from "./ui/input";
 import { Field } from "./ui/field";
 import { Button } from "./ui/button";
 
-const SearchForm = ({ query }: { query?: string }) => {
+import { useSearchParams } from "next/navigation";
+
+const SearchForm = () => {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query") || "";
+
   return (
     <Form action={"/"} scroll={false} className="mt-10">
       <Field orientation={"horizontal"} className="max-w-md mx-auto">
