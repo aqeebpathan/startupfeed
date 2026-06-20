@@ -1,12 +1,9 @@
 import { auth } from "@/auth";
-import StartupForm from "@/components/startup-form";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
+import StartupForm from "@/components/startup-form";
 
-const page = async () => {
-  const session = await auth();
-
-  if (!session) redirect("/");
-
+function SubmitContent() {
   return (
     <section>
       <div className="max-w-6xl mx-auto">
@@ -19,10 +16,27 @@ const page = async () => {
             Share your idea, journey, or build-in-public story.
           </p>
         </div>
+
         <StartupForm />
       </div>
     </section>
   );
-};
+}
 
-export default page;
+async function AuthGate() {
+  const session = await auth();
+
+  if (!session) {
+    redirect("/");
+  }
+
+  return <SubmitContent />;
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthGate />
+    </Suspense>
+  );
+}

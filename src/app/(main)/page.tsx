@@ -29,7 +29,9 @@ const Home = ({
             </span>
           </h1>
           <div className="mt-10">
-            <SearchForm />
+            <Suspense fallback={<Skeleton className="h-9 max-w-md mx-auto" />}>
+              <SearchForm />
+            </Suspense>{" "}
           </div>
         </div>
       </section>
@@ -49,10 +51,16 @@ async function Posts({
 }: {
   searchParams: Promise<{ query?: string }>;
 }) {
+  // dynamic API read OUTSIDE any "use cache" scope — totally fine here
+  const { query = "" } = await searchParams;
+
+  return <CachedPosts query={query} />;
+}
+
+async function CachedPosts({ query }: { query: string }) {
   "use cache";
-
-  const query = (await searchParams).query || "";
-
+  // query is a plain serializable string, so it becomes part of the cache key —
+  // sanityFetch's internal cacheTag() calls now have a valid cache scope to attach to
   const { data } = await sanityFetch({
     query: STARTUPS_QUERY,
     params: { search: query || null },

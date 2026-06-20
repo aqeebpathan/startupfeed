@@ -1,10 +1,11 @@
+import { Suspense } from "react";
 import { after } from "next/server";
 
 import { client } from "@/sanity/lib/client";
 import { writeClient } from "@/sanity/lib/write-client";
 import { STARTUP_VIEWS_QUERY } from "@/sanity/lib/queries";
 
-const Views = async ({ id }: { id: string }) => {
+async function StartupViews({ id }: { id: string }) {
   const data = await client.fetch(
     STARTUP_VIEWS_QUERY,
     { id },
@@ -20,10 +21,13 @@ const Views = async ({ id }: { id: string }) => {
         .set({ views: totalViews + 1 })
         .commit(),
   );
-
   return (
-    <div className="px-4 py-2 text-sm border w-fit">{totalViews} views</div>
+    <Suspense
+      fallback={<div className="h-6 w-16 animate-pulse bg-muted rounded" />}
+    >
+      <div className="px-4 py-2 text-sm border w-fit">{totalViews} views</div>
+    </Suspense>
   );
-};
+}
 
-export default Views;
+export default StartupViews;

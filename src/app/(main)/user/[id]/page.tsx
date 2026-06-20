@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { auth } from "@/auth";
 import { notFound } from "next/navigation";
 import { client } from "@/sanity/lib/client";
@@ -9,13 +10,14 @@ import UserStartups from "@/components/user-startups";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
+async function getUser(id: string) {
+  return client.fetch(AUTHOR_BY_ID_QUERY, { id });
+}
+
+const UserDetails = async ({ params }: { params: Promise<{ id: string }> }) => {
   const { id } = await params;
 
-  const [session, user] = await Promise.all([
-    auth(),
-    client.fetch(AUTHOR_BY_ID_QUERY, { id }),
-  ]);
+  const [session, user] = await Promise.all([auth(), getUser(id)]);
 
   if (!user) notFound();
 
@@ -81,5 +83,17 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
     </main>
   );
 };
+
+const Page = ({ params }: { params: Promise<{ id: string }> }) => (
+  <Suspense
+    fallback={
+      <main className="mx-auto max-w-6xl px-4 py-10">
+        <div className="h-96 w-full rounded-xl border bg-muted animate-pulse" />
+      </main>
+    }
+  >
+    <UserDetails params={params} />
+  </Suspense>
+);
 
 export default Page;
